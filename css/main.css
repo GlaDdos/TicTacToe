@@ -17,3 +17,20 @@ body{
   text-shadow: 0.1em 0.1em 0.08em #2d6a85;
 
 }
+
+button{
+  height: 4em;
+  width: 4em;
+
+  font-size: 0.8em;
+  vertical-align: middle;
+
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 0.5em;
+
+}
+
+#board{
+  text-align: center;
+}
