@@ -1,4 +1,5 @@
-var player = true;
+var playerSelect = "";
+var compSelect = "";
 var boardState = {
   1: null,
   2: null,
@@ -25,9 +26,24 @@ var winCombination = [
 ];
 
 $(document).ready(function(){
+  $('#board').hide();
+
+  $(".cell-apart").on('click', function(){
+    if($(this).html() == 'X'){
+      playerSelect = 'X';
+      compSelect = 'O';
+    }else {
+      playerSelect = 'O';
+      compSelect = 'X';
+    }
+
+    $('#board').show();
+    $(".cell-apart").hide();
+  });
+
+
   $(".cell").on("click",function(){
-    var cellId = this;
-    player = playerClick(player, cellId);
+    playerClick(this);
     checkBoard(boardState, winCombination);
     console.log(freeMoves);
 
@@ -35,26 +51,25 @@ $(document).ready(function(){
 });
 
 
-function playerClick(player, cellId){
-  if(player){
-    $(cellId).html('X');
+function playerClick(cellId){
+    $(cellId).html(playerSelect);
     boardState[$(cellId).attr('id')] = $(cellId).html();
-  }else{
-    $(cellId).html('o');
-    boardState[$(cellId).attr('id')] = $(cellId).html();
-  }
 
-  var a = compMove(boardState, winCombination);
-  console.log(a);
+    var compCellId = compMove(boardState, winCombination);
 
-  return !player;
+    $("#" + compCellId + "").html(compSelect);
+    boardState[compCellId] = compCellId;
+
+    var a = compMove(boardState, winCombination);
+    console.log(a);
 }
 
 function checkBoard(boardState, winCombination){
   freeMoves = [];
   for(var i = 0; i < winCombination.length; i++){
     if((boardState[winCombination[i][0]] == boardState[winCombination[i][1]]) && ( boardState[winCombination[i][1]] == boardState[winCombination[i][2]]) && (boardState[winCombination[i][0]] !== null)){
-      console.log("WINWINWIN");
+      $('#board').css('pointer-events', 'none');
+      return 0;
     }
   }
 

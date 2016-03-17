@@ -34,3 +34,20 @@ button{
 #board{
   text-align: center;
 }
+
+#select{
+  text-align: center;
+
+}
+
+.cell-apart{
+  margin: 2em;
+}
+
+.cell-apart:hover{
+  background-color: rgb(57, 163, 13);
+}
+
+.cell-apart:active{
+  border-color: red;
+}
