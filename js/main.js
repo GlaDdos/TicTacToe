@@ -1,5 +1,10 @@
-var playerSelect = "";
-var compSelect = "";
+var playerSelect  = "";
+var compSelect    = "";
+var playerScore   = 0;
+var drawScore     = 0;
+var compScore     = 0;
+var freeMoves     = [];
+
 var boardState = {
   1: null,
   2: null,
@@ -12,15 +17,13 @@ var boardState = {
   9: null,
 };
 
-var freeMoves = [];
-
 var winCombination = [
   [1,2,3],
   [4,5,6],
   [7,8,9],
   [1,4,7],
   [2,5,8],
-  [3,6,9],
+  [3,6,9
   [3,5,7],
   [1,5,9]
 ];
@@ -38,14 +41,19 @@ $(document).ready(function(){
     }
 
     $('#board').show();
+
+    checkBoard(boardState, winCombination);
+
     $(".cell-apart").hide();
   });
 
 
   $(".cell").on("click",function(){
-    playerClick(this);
-    checkBoard(boardState, winCombination);
-    console.log(freeMoves);
+    if(playerClick(this) === true || compClick() === true){
+      setTimeout(reset, 1000);
+      return 0;
+    }
+
 
   });
 });
@@ -54,14 +62,25 @@ $(document).ready(function(){
 function playerClick(cellId){
     $(cellId).html(playerSelect);
     boardState[$(cellId).attr('id')] = $(cellId).html();
+    $(cellId).css('pointer-events', 'none');
+    if(checkBoard(boardState, winCombination)){
+      return true;
+    }
+}
 
-    var compCellId = compMove(boardState, winCombination);
+function compClick(){
 
-    $("#" + compCellId + "").html(compSelect);
-    boardState[compCellId] = compCellId;
+  var compCellId = compMove(boardState, winCombination);
 
-    var a = compMove(boardState, winCombination);
-    console.log(a);
+  $("#" + compCellId + "")
+    .html(compSelect)
+    .css('pointer-events', 'none');
+
+  boardState[compCellId] = compSelect;
+  if(checkBoard(boardState, winCombination)){
+    return true;
+  }
+
 }
 
 function checkBoard(boardState, winCombination){
@@ -69,7 +88,35 @@ function checkBoard(boardState, winCombination){
   for(var i = 0; i < winCombination.length; i++){
     if((boardState[winCombination[i][0]] == boardState[winCombination[i][1]]) && ( boardState[winCombination[i][1]] == boardState[winCombination[i][2]]) && (boardState[winCombination[i][0]] !== null)){
       $('#board').css('pointer-events', 'none');
-      return 0;
+
+      if(boardState[winCombination[i][0]] == playerSelect){
+        playerScore++;
+
+        $('#' + winCombination[i][0] + ', #' + winCombination[i][1] + ', #' + winCombination[i][2]).toggleClass('cell-blink-green');
+
+        setTimeout(function(){
+          $('#' + winCombination[i][0] + ', #' + winCombination[i][1] + ', #' + winCombination[i][2]).toggleClass('cell-blink-green');
+        }, 700);
+
+
+      }else {
+        compScore++;
+        $('#' + winCombination[i][0] + ', #' + winCombination[i][1] + ', #' + winCombination[i][2]).toggleClass('cell-blink-red');
+
+        setTimeout(function(){
+          $('#' + winCombination[i][0] + ', #' + winCombination[i][1] + ', #' + winCombination[i][2]).toggleClass('cell-blink-red');
+        }, 700);
+
+
+      }
+
+      $('#score').html(
+        "<p>Won: "  + playerScore    + '&emsp14;' +
+         "Draw: "   + drawScore      + '&emsp14;' +
+         "Lost: "   + compScore      + '&emsp14;' +
+         "</p>"
+      );
+      return true;
     }
   }
 
@@ -77,6 +124,19 @@ function checkBoard(boardState, winCombination){
     if(boardState[i] === null){
       freeMoves.push(i);
     }
+  }
+
+  if (freeMoves.length < 1) {
+    drawScore++;
+
+    $('#score').html(
+      "<p>Won: "  + playerScore    + '&emsp14;' +
+       "Draw: "   + drawScore      + '&emsp14;' +
+       "Lost: "   + compScore      + '&emsp14;' +
+       "</p>"
+    );
+
+    return true;
   }
 }
 
@@ -108,4 +168,23 @@ function compMove(boardState, winCombination){
   //3
   return freeMoves[Math.floor((Math.random() * freeMoves.length))];
 
+}
+
+function reset(){
+  boardState = {
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+    6: null,
+    7: null,
+    8: null,
+    9: null,
+  };
+
+  $('button')
+  .html("")
+  .css('pointer-events', 'all');
+  checkBoard(boardState, winCombination);
 }
